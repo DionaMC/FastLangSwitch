@@ -45,12 +45,12 @@ loom {
 
 processResources {
     inputs.property 'version', project.version
-    inputs.property 'mcversion', '1.8.9'
+    inputs.property 'mcversion', '1.12.2'
 
     // replace stuff in mcmod.info, nothing else
     filesMatching('mcmod.info') {
         // replace version and mcversion
-        expand('version': project.version, 'mcversion': project.minecraftVersion)
+        expand('version': project.version, 'mcversion': '1.12.2')
     }
 }
 

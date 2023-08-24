@@ -1,0 +1,16 @@
+[
+{
+  "modid": "fastlangswitch",
+  "name": "FastLangSwitch",
+  "description": "Let your changing the game language will be almost instant.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["DionaMC"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
