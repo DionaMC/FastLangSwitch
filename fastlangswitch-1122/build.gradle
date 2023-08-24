@@ -1,0 +1,89 @@
+import dev.architectury.pack200.java.Pack200Adapter
+plugins {
+    id 'java'
+    id 'gg.essential.loom' version '0.10.0.5'
+    id 'dev.architectury.architectury-pack200' version '0.1.3'
+}
+
+group = 'dev.diona'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repo.spongepowered.org/maven/"
+    }
+}
+
+configurations.create('bundle')
+configurations.implementation.extendsFrom(configurations.named('bundle').get())
+
+dependencies {
+    minecraft("com.mojang:minecraft:1.12.2")
+    mappings("de.oceanlabs.mcp:mcp_stable:39-1.12")
+    forge("net.minecraftforge:forge:1.12.2-14.23.5.2847")
+    bundle("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        setTransitive(false)
+    }
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
+}
+
+loom {
+    launchConfigs {
+        "client" {
+            property("mixin.debug", "true")
+            property("asmhelper.verbose", "true")
+            arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
+            arg("--mixin", "mixins.fastlangswitch.json")
+        }
+    }
+    forge {
+        pack200Provider.set(new Pack200Adapter())
+        mixinConfig("mixins.fastlangswitch.json")
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', '1.8.9'
+
+    // replace stuff in mcmod.info, nothing else
+    filesMatching('mcmod.info') {
+        // replace version and mcversion
+        expand('version': project.version, 'mcversion': project.minecraftVersion)
+    }
+}
+
+sourceSets {
+    main {
+        output.resourcesDir = java.classesDirectory
+    }
+}
+
+jar {
+    archiveBaseName = 'fastlangswitch'
+    from {
+        configurations.bundle.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    manifest.attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Specification-Title': project.name,
+            'Specification-Version': project.version,
+            'TweakClass': "org.spongepowered.asm.launch.MixinTweaker",
+            'ForceLoadAsMod': true,
+            'FMLCorePluginContainsFMLMod': true,
+            'ModSide': 'CLIENT',
+    )
+    exclude("META-INF/MUMFREY.RSA")
+    exclude("META-INF/MUMFREY.SF")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+}

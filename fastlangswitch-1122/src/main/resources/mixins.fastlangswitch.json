@@ -1,0 +1,10 @@
+{
+  "package": "dev.diona.fastlangswitch.mixin",
+  "minVersion": "0.7",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "MixinSelectiveReloadStateHandler"
+  ]
+}
